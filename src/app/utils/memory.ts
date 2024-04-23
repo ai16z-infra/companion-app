@@ -3,7 +3,9 @@ import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { PineconeClient } from "@pinecone-database/pinecone";
 import { PineconeStore } from "langchain/vectorstores/pinecone";
 import { SupabaseVectorStore } from "langchain/vectorstores/supabase";
+import { QdrantVectorStore } from "langchain/vectorstores/qdrant";
 import { SupabaseClient, createClient } from "@supabase/supabase-js";
+import { QdrantClient } from '@qdrant/js-client-rest';
 
 export type CompanionKey = {
   companionName: string;
@@ -14,13 +16,16 @@ export type CompanionKey = {
 class MemoryManager {
   private static instance: MemoryManager;
   private history: Redis;
-  private vectorDBClient: PineconeClient | SupabaseClient;
+  private vectorDBClient: PineconeClient | SupabaseClient | QdrantClient;
 
   public constructor() {
     this.history = Redis.fromEnv();
     if (process.env.VECTOR_DB === "pinecone") {
       this.vectorDBClient = new PineconeClient();
-    } else {
+    } else if (process.env.VECTOR_DB === "qdrant") {
+      this.vectorDBClient = new QdrantClient({ url: process.env.QDRANT_URL!, apiKey: process.env?.QDRANT_API_KEY });
+    }
+    else {
       const auth = {
         detectSessionInUrl: false,
         persistSession: false,
@@ -57,6 +62,21 @@ class MemoryManager {
         new OpenAIEmbeddings({ openAIApiKey: process.env.OPENAI_API_KEY }),
         { pineconeIndex }
       );
+
+      const similarDocs = await vectorStore
+        .similaritySearch(recentChatHistory, 3, { fileName: companionFileName })
+        .catch((err) => {
+          console.log("WARNING: failed to get vector search results.", err);
+        });
+      return similarDocs;
+    } else if (process.env.VECTOR_DB === "qdrant") {
+      console.log("INFO: using Qdrant for vector search.");
+      const qdrantClient = <QdrantClient>this.vectorDBClient;
+
+      const vectorStore = await QdrantVectorStore.fromExistingCollection(new OpenAIEmbeddings({ openAIApiKey: process.env.OPENAI_API_KEY }), {
+        client: qdrantClient,
+        collectionName: process.env.QDRANT_COLLECTION_NAME,
+      });
 
       const similarDocs = await vectorStore
         .similaritySearch(recentChatHistory, 3, { fileName: companionFileName })

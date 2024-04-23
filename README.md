@@ -31,7 +31,7 @@ The stack is based on the [AI Getting Started Stack](https://github.com/a16z-inf
 
 - Auth: [Clerk](https://clerk.com/)
 - App logic: [Next.js](https://nextjs.org/)
-- VectorDB: [Pinecone](https://www.pinecone.io/) / [Supabase pgvector](https://supabase.com/docs/guides/database/extensions/pgvector)
+- VectorDB: [Pinecone](https://www.pinecone.io/) / [Supabase pgvector](https://supabase.com/docs/guides/database/extensions/pgvector) / [Qdrant](https://qdrant.tech/)
 - LLM orchestration: [Langchain.js](https://js.langchain.com/docs/)
 - Text model: [OpenAI](https://platform.openai.com/docs/models), [Replicate (Vicuna13b)](https://replicate.com/replicate/vicuna-13b)
 - Text streaming: [ai sdk](https://github.com/vercel-labs/ai)
@@ -93,8 +93,7 @@ c. **Replicate API key**
 
 Visit https://replicate.com/account/api-tokens to get your Replicate API key if you're using Vicuna for your language model.
 
-
-❗ **_NOTE:_** By default, this template uses Pinecone as vector store, but you can turn on Supabase pgvector easily by uncommenting `VECTOR_DB=supabase` in `.env.local`. This means you only need to fill out either Pinecone API key _or_ Supabase API key.
+❗ **_NOTE:_** By default, this template uses Pinecone as a vector store, but you can switch to Supabase pgvector or Qdrant by uncommenting `VECTOR_DB=supabase` or `VECTOR_DB=qdrant` in `.env.local`. This means you only need to fill out either `PINECONE_API_KEY`, `SUPABASE_API_KEY`, or Qdrant API details such as `QDRANT_URL`, `QDRANT_API_KEY`, and `QDRANT_COLLECTION_NAME`.
 
 d. **Pinecone API key**
 
@@ -146,6 +145,12 @@ npm run generate-embeddings-pinecone
 
 ```bash
 npm run generate-embeddings-supabase
+```
+
+#### If using Qdrant
+
+```bash
+npm run generate-embeddings-qdrant
 ```
 
 ### 5. Run app locally

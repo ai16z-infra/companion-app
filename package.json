@@ -9,6 +9,7 @@
     "lint": "next lint",
     "generate-embeddings-pinecone": "node src/scripts/indexPinecone.mjs",
     "generate-embeddings-supabase": "node src/scripts/indexPGVector.mjs",
+    "generate-embeddings-qdrant": "node src/scripts/indexQdrant.mjs",
     "export-to-character": "node src/scripts/exportToCharacter.mjs"
   },
   "dependencies": {
@@ -16,6 +17,7 @@
     "@clerk/nextjs": "^4.21.9-snapshot.56dc3e3",
     "@headlessui/react": "^1.7.15",
     "@pinecone-database/pinecone": "^0.1.6",
+    "@qdrant/js-client-rest": "^1.9.0",
     "@supabase/supabase-js": "^2.25.0",
     "@tailwindcss/forms": "^0.5.3",
     "@types/node": "20.2.5",
